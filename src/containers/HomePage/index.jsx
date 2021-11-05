@@ -1,21 +1,29 @@
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "reselect";
 import { makeSelectUsers } from "./selectors";
 import axios from "axios";
+import { setUsers } from "./actions";
 
 const stateSelector = createSelector(makeSelectUsers, (users) => ({
   users,
 }));
 
+//reduxDispatcher
+const actionDispatch = (dispatch) => ({
+  setUser: (users) => dispatch(setUsers(users)),
+});
+
 const url = "https://reqres.in/api/users";
 
 export default function HomePage(props) {
   const { users } = useSelector(stateSelector);
+  const { setUser } = actionDispatch(useDispatch());
 
   const fetchUsers = async () => {
     const response = await axios.get(url).catch((error) => console.log(error));
-    console.log(response.data);
+
+    setUser(response.data.data);
   };
 
   useEffect(() => {
@@ -23,5 +31,6 @@ export default function HomePage(props) {
   }, []);
 
   console.log({ users });
+
   return <div>Hello world!</div>;
 }
